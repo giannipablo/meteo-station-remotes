@@ -1,3 +1,38 @@
+#include <WiFi.h>
+#include "time.h"
+
+////////////////////////////////////////////////
+// WiFi stuff
+const char* ssid       = "";
+const char* password   = "";
+
+////////////////////////////////////////////////
+// TimeStamp stuff
+const char* ntpServer = "pool.ntp.org";
+const long  gmtOffset_sec = 0;
+const int   daylightOffset_sec = 0;
+
+char tmOut[30];
+
+char * getTimeStamp()
+{
+  struct tm timeinfo;
+  
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    sprintf(tmOut,"N/A");
+    return tmOut;
+  }
+  sprintf(tmOut,"%d-%d-%d-%d-%d-%d",timeinfo.tm_year + 1900,
+                                    timeinfo.tm_mon + 1,
+                                    timeinfo.tm_mday,
+                                    timeinfo.tm_hour,
+                                    timeinfo.tm_min,
+                                    timeinfo.tm_sec);
+  
+  return tmOut;
+}
+
 ////////////////////////////////////////////////
 // Timer stuff
 volatile uint32_t timedInterruptCounter;
@@ -41,6 +76,22 @@ void setup() {
   Serial.begin(115200);
 
   ////////////////////////////////////////////////
+  // WiFi stuff
+  Serial.printf("Connecting to %s \n", ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+  Serial.printf("\nConnected to %s \n", ssid);
+
+  ////////////////////////////////////////////////
+  // TimeStamp stuff
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+  Serial.printf("%s\n",getTimeStamp());
+
+
+  ////////////////////////////////////////////////
   // Timer stuff
   timer = timerBegin(0, 80, true);
   timerAttachInterrupt(timer, &onTimer, true);
@@ -79,7 +130,7 @@ void loop() {
   }
 
 
-  if(timedInterruptCounter==600){
+  if(timedInterruptCounter==200){
     Serial.printf("End %u counter at\n", timedInterruptCounter);  
   
     portENTER_CRITICAL_ISR(&timerMux);
@@ -89,5 +140,6 @@ void loop() {
     flagAt0000 = true;
     flagAt0020 = true;
   }
+  Serial.printf("%s\n",getTimeStamp());
 
 }
