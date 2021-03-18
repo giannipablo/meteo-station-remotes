@@ -9,8 +9,7 @@
 
 class WF{
     public:
-
-        void init(SMEM msmem);
+        void init(void);
         void initAP(void);
 
 
@@ -21,6 +20,8 @@ class WF{
 
 
     private:
+        SMEM smem;
+
         String ssid;
         String pass;
         

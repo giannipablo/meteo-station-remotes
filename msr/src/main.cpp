@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <WiFi.h>
+// #include <WiFi.h>
 #include <time.h>
 
 #include "WF.h"
@@ -8,6 +8,8 @@
 // WiFi stuff
 const char* ssid       = "";
 const char* password   = "";
+
+WF wf;
 
 ////////////////////////////////////////////////
 // TimeStamp stuff
@@ -81,11 +83,13 @@ void setup() {
     ////////////////////////////////////////////////
     // WiFi stuff
     Serial.printf("Connecting to %s \n", ssid);
-    WiFi.begin(ssid, password);
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.print(".");
-    }
+    // WiFi.begin(ssid, password);
+    // while (WiFi.status() != WL_CONNECTED) {
+    //     delay(500);
+    //     Serial.print(".");
+    // }
+    
+    wf.init();
     Serial.printf("\nConnected to %s \n", ssid);
 
     ////////////////////////////////////////////////
@@ -112,37 +116,38 @@ void setup() {
 // Loop
 void loop() {
 
+    Serial.print("looping");
+    delay(500);
+    // if((timedInterruptCounter==0) & (flagAt0000==true)){
+    //     Serial.printf("Init %u counter at\n", timedInterruptCounter);
+    
+    //     attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
+    
+    //     flagAt0000 = false;
+    // }
+
+
+    // if((timedInterruptCounter==20) & (flagAt0020==true)){
+    //     detachInterrupt(ExtSwitch1.PIN);
+    
+    //     Serial.printf("Two seconds interrupt %u counter at %u\n", timedInterruptCounter, ExtSwitch1.extIntCounter);
+    
+    //     ExtSwitch1.extIntCounter = 0;
+
+    //     flagAt0020 = false;
+    // }
+
+
+    // if(timedInterruptCounter==200){
+    //     Serial.printf("End %u counter at\n", timedInterruptCounter);  
   
-    if((timedInterruptCounter==0) & (flagAt0000==true)){
-        Serial.printf("Init %u counter at\n", timedInterruptCounter);
-    
-        attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
-    
-        flagAt0000 = false;
-    }
+    //     portENTER_CRITICAL_ISR(&timerMux);
+    //     timedInterruptCounter = 0;
+    //     portEXIT_CRITICAL_ISR(&timerMux);
 
-
-    if((timedInterruptCounter==20) & (flagAt0020==true)){
-        detachInterrupt(ExtSwitch1.PIN);
-    
-        Serial.printf("Two seconds interrupt %u counter at %u\n", timedInterruptCounter, ExtSwitch1.extIntCounter);
-    
-        ExtSwitch1.extIntCounter = 0;
-
-        flagAt0020 = false;
-    }
-
-
-    if(timedInterruptCounter==200){
-        Serial.printf("End %u counter at\n", timedInterruptCounter);  
-  
-        portENTER_CRITICAL_ISR(&timerMux);
-        timedInterruptCounter = 0;
-        portEXIT_CRITICAL_ISR(&timerMux);
-
-        flagAt0000 = true;
-        flagAt0020 = true;
-    }
+    //     flagAt0000 = true;
+    //     flagAt0020 = true;
+    // }
     // Serial.printf("%s\n",getTimeStamp());
 
 }
