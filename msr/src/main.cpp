@@ -89,7 +89,8 @@ void setup() {
     //     Serial.print(".");
     // }
     
-    wf.init();
+    wf.initAP();
+    wf.initWebServer();
     Serial.printf("\nConnected to %s \n", ssid);
 
     ////////////////////////////////////////////////
@@ -116,8 +117,8 @@ void setup() {
 // Loop
 void loop() {
 
-    Serial.print("looping");
-    delay(500);
+
+    wf.runWebServer();
     // if((timedInterruptCounter==0) & (flagAt0000==true)){
     //     Serial.printf("Init %u counter at\n", timedInterruptCounter);
     

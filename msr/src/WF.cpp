@@ -8,10 +8,10 @@ void WF::init(void)
 {
     smem.init();
 
-    smem.writeFile(SPIFFS, "/SSID.txt", "Fibertel WiFi030 2.4GHz");
-    smem.writeFile(SPIFFS, "/PASS.txt", "01430030175");
-    smem.writeFile(SPIFFS, "/HOST.txt", "http://noseperobueno.com");
-    smem.writeFile(SPIFFS, "/ENDPOINT.txt", "hola");
+    // smem.writeFile(SPIFFS, "/SSID.txt", "Fibertel WiFi030 2.4GHz");
+    // smem.writeFile(SPIFFS, "/PASS.txt", "01430030175");
+    // smem.writeFile(SPIFFS, "/HOST.txt", "http://noseperobueno.com");
+    // smem.writeFile(SPIFFS, "/ENDPOINT.txt", "hola");
 
     int i = 0;
     WiFi.mode(WIFI_STA);
@@ -61,6 +61,34 @@ void WF::initAP(void)
 
     Serial.print("AP IP address: ");
     Serial.println(WiFi.softAPIP());
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Funcion: initWebServer                                                     //
+// Descripción: Starts the web server to register WiFi credentials            //
+////////////////////////////////////////////////////////////////////////////////
+void WF::initWebServer(void)
+{
+    server = new WebServer;
+    if(server){
+        server->on("/", [&](){
+            server->send(200, "text/html", index_html);
+        });
+        server->begin(80);
+        Serial.println("WebServer configured...");
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Funcion: runWebServer                                                      //
+// Descripción: Runs the web server to register WiFi credentials              //
+////////////////////////////////////////////////////////////////////////////////
+void WF::runWebServer(void)
+{
+    if(server){
+        // Serial.println("WebServer up and running...");
+        server->handleClient();
+    }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
