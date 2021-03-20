@@ -15,7 +15,7 @@ void WF::init(void)
     sprintf(host_str, "%s", smem.readFile(SPIFFS, "/HOST.txt").c_str());
     sprintf(path_str, "%s", smem.readFile(SPIFFS, "/PATH.txt").c_str());
 
-    Serial.print("Connecting to WiFi network: " + String(ssid_str) + "..");
+    Serial.println("Connecting to WiFi network: " + String(ssid_str) + "..");
     WiFi.begin(ssid_str, pass_str);
     while ((WiFi.status() != WL_CONNECTED) && (i < 50))
     {
@@ -42,7 +42,7 @@ void WF::initAP(void)
 
     WiFi.disconnect(true); // Desconecto WiFi
 
-    if (!WiFi.softAP("MultBoard", "123456789"))
+    if (!WiFi.softAP("MeteoStationConfig", "123456789"))
     {
         Serial.println("Falla AP");
     }
@@ -56,6 +56,8 @@ void WF::initAP(void)
 
     Serial.print("AP IP address: ");
     Serial.println(WiFi.softAPIP());
+
+    this->initWebServer();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

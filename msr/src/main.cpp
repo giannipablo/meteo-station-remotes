@@ -5,10 +5,13 @@
 #include "WF.h"
 
 ////////////////////////////////////////////////
-// WiFi stuff
-const char* ssid       = "";
-const char* password   = "";
+// Generl stuff
+#define CFGBTN 22
 
+byte CONFIG_MODE = 0;
+
+////////////////////////////////////////////////
+// WiFi stuff
 WF wf;
 
 ////////////////////////////////////////////////
@@ -80,36 +83,44 @@ void setup() {
     // Serial port configuration
     Serial.begin(115200);
 
-    ////////////////////////////////////////////////
-    // WiFi stuff
-    Serial.printf("Connecting to %s \n", ssid);
-    // WiFi.begin(ssid, password);
-    // while (WiFi.status() != WL_CONNECTED) {
-    //     delay(500);
-    //     Serial.print(".");
-    // }
-    
-    wf.initAP();
-    wf.initWebServer();
-    Serial.printf("\nConnected to %s \n", ssid);
-
-    ////////////////////////////////////////////////
-    // TimeStamp stuff
-    configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-    Serial.printf("%s\n",getTimeStamp());
+    // Configuration pin
+    pinMode(CFGBTN, INPUT);
 
 
-    ////////////////////////////////////////////////
-    // Timer stuff
-    timer = timerBegin(0, 80, true);
-    timerAttachInterrupt(timer, &onTimer, true);
-    timerAlarmWrite(timer, 100000, true);
-    timerAlarmEnable(timer);
+    if(digitalRead(CFGBTN)==0){
+        CONFIG_MODE = 1;
 
-    ////////////////////////////////////////////////
-    // Ext Int stuff
-    pinMode(ExtSwitch1.PIN, INPUT_PULLUP);
-    // attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
+        ////////////////////////////////////////////////
+        // WiFi stuff
+        Serial.println("Starting WiFi on AP mode");
+        wf.initAP();
+    }else{
+        CONFIG_MODE = 0;
+
+        ////////////////////////////////////////////////
+        // WiFi stuff
+        Serial.println("Starting WiFi on Station mode");
+        wf.init();
+
+        ////////////////////////////////////////////////
+        // TimeStamp stuff
+        configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+        Serial.printf("%s\n",getTimeStamp());
+
+        ////////////////////////////////////////////////
+        // Timer stuff
+        timer = timerBegin(0, 80, true);
+        timerAttachInterrupt(timer, &onTimer, true);
+        timerAlarmWrite(timer, 100000, true);
+        timerAlarmEnable(timer);
+
+        ////////////////////////////////////////////////
+        // Ext Int stuff
+        pinMode(ExtSwitch1.PIN, INPUT_PULLUP);
+        // attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
+    }
+
+
 }
 
 
@@ -117,8 +128,10 @@ void setup() {
 // Loop
 void loop() {
 
+    if(CONFIG_MODE==1){
+        wf.runWebServer();
+    }
 
-    wf.runWebServer();
     // if((timedInterruptCounter==0) & (flagAt0000==true)){
     //     Serial.printf("Init %u counter at\n", timedInterruptCounter);
     
