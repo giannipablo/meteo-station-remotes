@@ -8,17 +8,12 @@ void WF::init(void)
 {
     smem.init();
 
-    // smem.writeFile(SPIFFS, "/SSID.txt", "Fibertel WiFi030 2.4GHz");
-    // smem.writeFile(SPIFFS, "/PASS.txt", "01430030175");
-    // smem.writeFile(SPIFFS, "/HOST.txt", "http://noseperobueno.com");
-    // smem.writeFile(SPIFFS, "/ENDPOINT.txt", "hola");
-
     int i = 0;
     WiFi.mode(WIFI_STA);
     sprintf(ssid_str, "%s", smem.readFile(SPIFFS, "/SSID.txt").c_str());
     sprintf(pass_str, "%s", smem.readFile(SPIFFS, "/PASS.txt").c_str());
     sprintf(host_str, "%s", smem.readFile(SPIFFS, "/HOST.txt").c_str());
-    sprintf(endp_str, "%s", smem.readFile(SPIFFS, "/ENDPOINT.txt").c_str());
+    sprintf(path_str, "%s", smem.readFile(SPIFFS, "/PATH.txt").c_str());
 
     Serial.print("Connecting to WiFi network: " + String(ssid_str) + "..");
     WiFi.begin(ssid_str, pass_str);
@@ -72,7 +67,15 @@ void WF::initWebServer(void)
     server = new WebServer;
     if(server){
         server->on("/", [&](){
-            server->send(200, "text/html", index_html);
+            if(server->method()==HTTP_POST){
+                smem.writeFile(SPIFFS, "/SSID.txt", server->arg("SSID").c_str());
+                smem.writeFile(SPIFFS, "/PASS.txt", server->arg("PASS").c_str());
+                smem.writeFile(SPIFFS, "/HOST.txt", server->arg("HOST").c_str());
+                smem.writeFile(SPIFFS, "/PATH.txt", server->arg("PATH").c_str());
+                server->send(200, "text/html", done_html);
+            } else {
+                server->send(200, "text/html", index_html);
+            }
         });
         server->begin(80);
         Serial.println("WebServer configured...");
