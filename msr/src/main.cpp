@@ -7,6 +7,7 @@
 
 ////////////////////////////////////////////////
 // Generl stuff
+#define BOARDLED 2
 #define CFGBTN 22
 
 byte CONFIG_MODE = 0;
@@ -62,6 +63,7 @@ void setup() {
     Serial.begin(115200);
 
     // Configuration pin
+    pinMode(BOARDLED, OUTPUT);
     pinMode(CFGBTN, INPUT_PULLUP);
 
 
@@ -72,6 +74,8 @@ void setup() {
         // WiFi stuff
         Serial.println("Starting WiFi on AP mode");
         wf.initAP();
+
+        digitalWrite(BOARDLED, HIGH);
     }else{
         CONFIG_MODE = 0;
 
@@ -96,6 +100,8 @@ void setup() {
         // Ext Int stuff
         pinMode(ExtSwitch1.PIN, INPUT_PULLUP);
         // attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
+
+        digitalWrite(BOARDLED, LOW);
     }
 
 
