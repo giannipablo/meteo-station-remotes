@@ -1,11 +1,13 @@
 #include <Arduino.h>
 // #include <WiFi.h>
-#include <time.h>
+// #include <time.h>
 
 #include "WF.h"
+#include "TimeStamp.h"
 
 ////////////////////////////////////////////////
 // Generl stuff
+#define BOARDLED 2
 #define CFGBTN 22
 
 byte CONFIG_MODE = 0;
@@ -16,30 +18,7 @@ WF wf;
 
 ////////////////////////////////////////////////
 // TimeStamp stuff
-const char* ntpServer = "pool.ntp.org";
-const long  gmtOffset_sec = 0;
-const int   daylightOffset_sec = 0;
-
-char tmOut[30];
-
-char * getTimeStamp()
-{
-  struct tm timeinfo;
-  
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time");
-    sprintf(tmOut,"N/A");
-    return tmOut;
-  }
-  sprintf(tmOut,"%d-%d-%d-%d-%d-%d",timeinfo.tm_year + 1900,
-                                    timeinfo.tm_mon + 1,
-                                    timeinfo.tm_mday,
-                                    timeinfo.tm_hour,
-                                    timeinfo.tm_min,
-                                    timeinfo.tm_sec);
-  
-  return tmOut;
-}
+TimeStamp dts(0, 0, "pool.ntp.org");
 
 ////////////////////////////////////////////////
 // Timer stuff
@@ -84,7 +63,8 @@ void setup() {
     Serial.begin(115200);
 
     // Configuration pin
-    pinMode(CFGBTN, INPUT);
+    pinMode(BOARDLED, OUTPUT);
+    pinMode(CFGBTN, INPUT_PULLUP);
 
 
     if(digitalRead(CFGBTN)==0){
@@ -94,6 +74,8 @@ void setup() {
         // WiFi stuff
         Serial.println("Starting WiFi on AP mode");
         wf.initAP();
+
+        digitalWrite(BOARDLED, HIGH);
     }else{
         CONFIG_MODE = 0;
 
@@ -104,8 +86,8 @@ void setup() {
 
         ////////////////////////////////////////////////
         // TimeStamp stuff
-        configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-        Serial.printf("%s\n",getTimeStamp());
+        Serial.println("Synchronizing with NTS");
+        Serial.println(dts.getTimeStamp());
 
         ////////////////////////////////////////////////
         // Timer stuff
@@ -118,6 +100,8 @@ void setup() {
         // Ext Int stuff
         pinMode(ExtSwitch1.PIN, INPUT_PULLUP);
         // attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
+
+        digitalWrite(BOARDLED, LOW);
     }
 
 
@@ -131,7 +115,8 @@ void loop() {
     if(CONFIG_MODE==1){
         wf.runWebServer();
     }
-
+    Serial.println(dts.getTimeStamp());
+    delay(1000);
     // if((timedInterruptCounter==0) & (flagAt0000==true)){
     //     Serial.printf("Init %u counter at\n", timedInterruptCounter);
     
