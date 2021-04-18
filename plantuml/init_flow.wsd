@@ -1,0 +1,14 @@
+@startuml
+
+start
+
+if (CONFIG_MODE==True) then (yes)
+    : **Configuration**;
+else (no)
+    : **Operation**;
+endif
+
+stop
+
+
+@enduml

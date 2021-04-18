@@ -1,0 +1,17 @@
+@startuml
+
+start
+
+repeat
+    : Run Web Server;
+    note left
+    Here it serves a web pagec to 
+    receive the configuration to
+    from the user.
+    endnote
+repeat while (!reset)
+
+stop
+
+
+@enduml
