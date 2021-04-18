@@ -1,0 +1,71 @@
+@startuml
+
+
+' if (sample time) then (yes)
+'   :process all\ndiagrams;
+' else (no)
+'   :process only
+'   __sequence__ and __activity__ diagrams;
+' endif
+start
+
+repeat
+    if (HWTimer == 0 sec) then (yes)
+        : **Task1**;
+        note left
+            * Enabel external HW interruptions
+            * Disable it self for the next loop cycle
+        endnote
+    else (no)
+    endif
+
+    if (HWTimer == //Tw// sec) then (yes)
+        : **Task2**;
+        note left
+            * Disable external HW interruption
+            * Capture counter to compute wind speed
+            * Disable it self for the next loop cycle
+        endnote
+    else (no)
+    endif
+
+    if (!Task1 & !Task2 & Task3) then (yes)
+        :**Task3**;
+        note left
+            //To be implemented, no sensors//
+            * Measures temperature
+            * Measures humidity
+            * Measures Preasure
+            * Measures Wind direction
+        endnote
+    else (no)
+    endif
+    
+
+    if (!Task1 & !Task2 & !Task3 & Send) then (yes)
+        :**Send**;
+        note left
+            * Waits for the Task to fish
+            * Builds json body with the data
+            * Sends data to API REST
+            * Disable it self for the next loop cycle
+        endnote
+    else (no)
+    endif
+
+    if (HWTimer == //Ts// sec) then (yes)
+        : **Sample**;
+        note left
+            * Waits for a new sampling cycle
+            * Enable all the tasks to run in the cycle
+            * Reset timer interruption counter
+        endnote
+    else (no)
+    endif
+
+repeat while (!reset)
+
+stop
+
+
+@enduml
