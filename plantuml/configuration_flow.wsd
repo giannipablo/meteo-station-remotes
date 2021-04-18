@@ -5,7 +5,7 @@ start
 repeat
     : Run Web Server;
     note left
-    Here it serves a web pagec to 
+    Here it serves a web page to 
     receive the configuration to
     from the user.
     endnote
