@@ -107,7 +107,7 @@ int WF::getTime(int *day, int *month, int *year, int *wday, int *hour, int *min,
 
     if (!getLocalTime(&timeinfo))
     {
-        return FALSE;
+        return false;
     }
     *day = timeinfo.tm_mday;
     *month = timeinfo.tm_mon;
@@ -116,7 +116,7 @@ int WF::getTime(int *day, int *month, int *year, int *wday, int *hour, int *min,
     *min = timeinfo.tm_min;
     *seg = timeinfo.tm_sec;
     *wday = timeinfo.tm_wday;
-    return TRUE;
+    return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -126,9 +126,9 @@ int WF::getTime(int *day, int *month, int *year, int *wday, int *hour, int *min,
 int WF::getStatus()
 {
     if (WiFi.status() == WL_CONNECTED)
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -158,4 +158,14 @@ int WF::wfDisconnect(void)
 {
     WiFi.disconnect();
     return 0;
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Funcion: getServerUrl                                                      //
+// Descripción: Devuelve la URL del server                                    //
+////////////////////////////////////////////////////////////////////////////////
+String WF::getServerUrl(void)
+{
+    return String(host_str) + "/" + String(path_str);
 }

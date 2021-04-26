@@ -1,6 +1,5 @@
 #include <Arduino.h>
-// #include <WiFi.h>
-// #include <time.h>
+#include <HTTPClient.h>
 
 #include "WF.h"
 #include "TimeStamp.h"
@@ -52,9 +51,9 @@ void IRAM_ATTR isr() {
 
 ////////////////////////////////////////////////
 // Loop stuff
-bool flagAt0000 = false;
-bool flagAt0020 = false;
-
+bool flagStart      = false;
+bool flagAnemometer = false;
+bool flagPost       = false;
 
 ////////////////////////////////////////////////
 // Setup
@@ -115,26 +114,52 @@ void loop() {
     if(CONFIG_MODE==1){
         wf.runWebServer();
     } else {
-        if((timedInterruptCounter==0) & (flagAt0000==true)){
+
+        // START
+        if((timedInterruptCounter==0) & (flagStart==true)){
             // Serial.printf("Init %u counter at\n", timedInterruptCounter);
 
             attachInterrupt(ExtSwitch1.PIN, isr, FALLING);
 
-            flagAt0000 = false;
+            flagStart = false;
         }
 
 
-        if((timedInterruptCounter==20) & (flagAt0020==true)){
+        // ANEMOMETER
+        if((timedInterruptCounter==20) & (flagAnemometer==true)){
             detachInterrupt(ExtSwitch1.PIN);
 
             Serial.printf("Two seconds interrupt %u counter at %u\n", timedInterruptCounter, ExtSwitch1.extIntCounter);
 
             ExtSwitch1.extIntCounter = 0;
 
-            flagAt0020 = false;
+            flagAnemometer = false;
+        }
+
+        
+        // SERVER POST
+        if((flagStart==false) & (flagAnemometer==false) & (flagPost==true)){
+
+            if(wf.getStatus()){
+                HTTPClient http;
+                http.begin(wf.getServerUrl().c_str());
+
+                http.addHeader("Content-Type", "application/json");
+                int httpResponseCode = http.POST("{\"api_key\":\"tPmAT5Ab3j7F9\",\"sensor\":\"BME280\",\"value1\":\"24.25\",\"value2\":\"49.54\",\"value3\":\"1005.14\"}");
+     
+                Serial.print("HTTP Response code: ");
+                Serial.println(httpResponseCode);
+        
+                // Free resources
+                http.end();
+            } else {
+                Serial.println("WiFi Disconnected");
+            }
+            flagPost = false;
         }
 
 
+        // ENABLE SAMPLE CYCLE
         if(timedInterruptCounter==200){
             Serial.printf("End %u counter at\n", timedInterruptCounter);  
     
@@ -142,9 +167,10 @@ void loop() {
             timedInterruptCounter = 0;
             portEXIT_CRITICAL_ISR(&timerMux);
 
-            flagAt0000 = true;
-            flagAt0020 = true;
+            flagStart      = true;
+            flagAnemometer = true;
+            flagPost       = true;
         }
-        Serial.printf("%s\n",getTimeStamp());
+        // Serial.println(dts.getTimeStamp());
     }
 }

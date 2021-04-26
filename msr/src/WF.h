@@ -5,7 +5,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 
-#include "config.h"
+// #include "config.h"
 #include "SPImem.h"
 #include "WFIndexHtml.h"
 #include "WFDoneHtml.h"
@@ -19,16 +19,18 @@ class WF{
         void runWebServer(void);
 
         int wfDisconnect(void);
+
         int getTime(int* day, int* month, int* year, int* wday, int* hour, int* min, int*seg);
         int getStatus(void);
-        String getSignalStrength(void);
 
+        String getSignalStrength(void);
+        String getServerUrl(void);
 
     private:
         SMEM smem;
 
-        String ssid;
-        String pass;
+        // String ssid;
+        // String pass;
         
         char ssid_str[30] = "Red Visita";
         char pass_str[20] =  "$visita$$";
