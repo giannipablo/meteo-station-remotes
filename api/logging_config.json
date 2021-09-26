@@ -1,0 +1,43 @@
+{
+    "version": 1,
+    "disable_existing_loggers": false,
+    "formatters": {
+        "default": {
+            "format": "| Meteo Station API | %(threadName)s | %(asctime)s | %(name)s | %(levelname)s | %(filename)s | %(funcName)s | %(message)s |"
+        }
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "level": "DEBUG",
+            "formatter": "default",
+            "stream": "ext://sys.stdout"
+        },
+        "rotating_file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "level": "INFO",
+            "formatter": "default",
+            "filename": "./logs/meteo_station_api.log",
+            "encoding": "utf8",
+            "maxBytes": 1048576,
+            "backupCount": 2
+        }
+    },
+    "root": {
+        "level": "INFO",
+        "handlers": [
+            "console",
+            "rotating_file"
+        ]
+    },
+    "loggers": {
+        "main.push": {
+            "level": "DEBUG",
+            "handlers": [
+                "console",
+                "rotating_file"
+            ],
+            "propagate": false
+        }
+    }
+}

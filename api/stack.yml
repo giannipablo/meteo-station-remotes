@@ -2,21 +2,32 @@
 version: '3.1'
 
 services:
-  # api:
-  #   build: . 
-  #   ports: 
-  #     - 8000:8000
-  #   volumes:
-  #     - /Users/pgianni/projects/Mios/meteo-station-remotes/api/logs:/usr/src/app/logs
+  api:
+    build: . 
+    ports: 
+      - 8000:8000
+    environment:
+      DB_URL: ${DB_URL}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_COLLECTION: ${DB_COLLECTION}
+    volumes:
+      - /Users/pgianni/projects/Mios/meteo-station-remotes/api/logs:/usr/src/app/logs
+
   mongo:
     image: mongo
     restart: always
+    # ports:
+    #   - 27017:27017
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes: 
       - /Users/pgianni/projects/Mios/meteo-station-remotes/api/db:/data/db
       - /Users/pgianni/projects/Mios/meteo-station-remotes/api/configdb:/data/configdb
+      - /Users/pgianni/projects/Mios/meteo-station-remotes/api/logs:/usr/src/app/logs
 
   mongo-express:
     image: mongo-express

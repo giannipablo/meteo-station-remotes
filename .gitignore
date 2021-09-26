@@ -1,4 +1,8 @@
 __pycache__/
 configdb/
 db/
+logs/
 .python-version
+.dockerenv
+.env
+tests.py
