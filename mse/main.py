@@ -11,7 +11,7 @@ API_URL = os.getenv('API_URL')
 PERIOD = int(os.getenv('PERIOD', '30'))
 
 
-
+print(PERIOD)
 def signal_handler(signal, frame):
     print('\nYou pressed Ctrl+C!')
     sys.exit(0)
@@ -30,7 +30,9 @@ while (True):
         "time_stamp" : f'{datetime.datetime.utcnow().isoformat()}',
         "payload" : {
             "temperature" : random.normalvariate(25,0.1),
-            "wind_speed" : random.normalvariate(30,1)
+            "humidity" : random.normalvariate(50, 0.03),
+            "wind_speed" : random.normalvariate(30,1),
+            "preasure" : random.normalvariate(400, 10)
         }
     }
 

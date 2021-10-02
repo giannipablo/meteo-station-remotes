@@ -34,6 +34,7 @@ class Payload(BaseModel):
     better to implement a list of objects with a measurement description.
     """
     temperature : Optional[float] = None
+    humidity : Optional[float] = None
     wind_speed : Optional[float] = None
     wind_direction : Optional[str] = None
     preasure : Optional[float] = None
